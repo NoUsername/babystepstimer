@@ -26,7 +26,7 @@ public class BabystepsTimerTestDriver {
     }
 
     public void init() throws Exception {
-        babystepsTimer.main(new String[0]);
+        babystepsTimer.init();
     }
 
     static void waitFor(long timeInMilliseconds) throws InterruptedException {

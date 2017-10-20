@@ -26,22 +26,26 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 public class BabystepsTimer {
-	private static final String BACKGROUND_COLOR_NEUTRAL = "#ffffff";
-	private static final String BACKGROUND_COLOR_FAILED = "#ffcccc";
-	private static final String BACKGROUND_COLOR_PASSED = "#ccffcc";
+	private  final String BACKGROUND_COLOR_NEUTRAL = "#ffffff";
+	private  final String BACKGROUND_COLOR_FAILED = "#ffcccc";
+	private  final String BACKGROUND_COLOR_PASSED = "#ccffcc";
 
-	private static final long SECONDS_IN_CYCLE = 120;
+	private  final long SECONDS_IN_CYCLE = 120;
 
-	private static JFrame timerFrame;
-	static JTextPane timerPane;
-	private static boolean timerRunning;
-	private static long currentCycleStartTime;
-	private static String lastRemainingTime;
-	private static String bodyBackgroundColor = BACKGROUND_COLOR_NEUTRAL;
+	private  JFrame timerFrame;
+	 JTextPane timerPane;
+	private  boolean timerRunning;
+	private  long currentCycleStartTime;
+	private  String lastRemainingTime;
+	private  String bodyBackgroundColor = BACKGROUND_COLOR_NEUTRAL;
 
-	private static DecimalFormat twoDigitsFormat = new DecimalFormat("00");
+	private  DecimalFormat twoDigitsFormat = new DecimalFormat("00");
 
-	public static void main(final String[] args) throws InterruptedException {
+	public static void main(String[] args) throws InterruptedException {
+		new BabystepsTimer().init();
+	}
+
+	public void init() throws InterruptedException {
 		timerFrame = new JFrame("Babysteps Timer");
 		timerFrame.setUndecorated(true);
 
@@ -100,7 +104,7 @@ public class BabystepsTimer {
 		timerFrame.setVisible(true);
 	}
 
-	private static String getRemainingTimeCaption(final long elapsedTime) {
+	private  String getRemainingTimeCaption(final long elapsedTime) {
 		long elapsedSeconds = elapsedTime/1000;
 		long remainingSeconds = SECONDS_IN_CYCLE - elapsedSeconds;
 
@@ -108,7 +112,7 @@ public class BabystepsTimer {
 		return twoDigitsFormat.format(remainingMinutes)+":"+twoDigitsFormat.format(remainingSeconds-remainingMinutes*60);
 	}
 
-	private static String createTimerHtml(final String timerText, final String bodyColor, final boolean running) {
+	private  String createTimerHtml(final String timerText, final String bodyColor, final boolean running) {
 		String timerHtml = "<html><body style=\"border: 3px solid #555555; background: "+bodyColor+"; margin: 0; padding: 0;\">" +
 				"<h1 style=\"text-align: center; font-size: 30px; color: #333333;\">"+timerText+"</h1>" +
 				"<div style=\"text-align: center\">";
@@ -124,7 +128,7 @@ public class BabystepsTimer {
 		return timerHtml;
 	}
 
-	public static synchronized void playSound(final String url) {
+	public  synchronized void playSound(final String url) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -141,7 +145,7 @@ public class BabystepsTimer {
 		}).start();
 	}
 
-	private static final class TimerThread extends Thread {
+	private  final class TimerThread extends Thread {
 		@Override
 		public void run() {
 			timerRunning = true;
