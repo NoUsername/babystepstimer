@@ -1,14 +1,14 @@
-/*  Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+/* Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
 */
 
 package net.davidtanzer.babysteps;
@@ -26,20 +26,20 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 public class BabystepsTimer {
-	private  final String BACKGROUND_COLOR_NEUTRAL = "#ffffff";
-	private  final String BACKGROUND_COLOR_FAILED = "#ffcccc";
-	private  final String BACKGROUND_COLOR_PASSED = "#ccffcc";
+	static final String BACKGROUND_COLOR_NEUTRAL = "#ffffff";
+	static final String BACKGROUND_COLOR_FAILED = "#ffcccc";
+	static final String BACKGROUND_COLOR_PASSED = "#ccffcc";
 
-	private  final long SECONDS_IN_CYCLE = 120;
+	private final long SECONDS_IN_CYCLE = 120;
 
-	private  JFrame timerFrame;
+	private JFrame timerFrame;
 	 JTextPane timerPane;
-	private  boolean timerRunning;
-	private  long currentCycleStartTime;
-	private  String lastRemainingTime;
-	private  String bodyBackgroundColor = BACKGROUND_COLOR_NEUTRAL;
+	private boolean timerRunning;
+	private long currentCycleStartTime;
+	private String lastRemainingTime;
+	private String bodyBackgroundColor = BACKGROUND_COLOR_NEUTRAL;
 
-	private  DecimalFormat twoDigitsFormat = new DecimalFormat("00");
+	private DecimalFormat twoDigitsFormat = new DecimalFormat("00");
 	private WallClock wallClock;
 
 	public static void main(String[] args) throws InterruptedException {
@@ -92,10 +92,10 @@ public class BabystepsTimer {
 						timerFrame.setAlwaysOnTop(false);
 						timerPane.setText(createTimerHtml(getRemainingTimeCaption(0L), BACKGROUND_COLOR_NEUTRAL, false));
 						timerFrame.repaint();
-					} else  if("command://reset".equals(e.getDescription())) {
+					} else if("command://reset".equals(e.getDescription())) {
 						currentCycleStartTime = wallClock.getCurrentCycleStartTime();
 						bodyBackgroundColor=BACKGROUND_COLOR_PASSED;
-					} else  if("command://quit".equals(e.getDescription())) {
+					} else if("command://quit".equals(e.getDescription())) {
 						System.exit(0);
 					}
 				}
@@ -106,7 +106,7 @@ public class BabystepsTimer {
 		timerFrame.setVisible(true);
 	}
 
-	private  String getRemainingTimeCaption(final long elapsedTime) {
+	private String getRemainingTimeCaption(final long elapsedTime) {
 		long elapsedSeconds = elapsedTime/1000;
 		long remainingSeconds = SECONDS_IN_CYCLE - elapsedSeconds;
 
@@ -114,7 +114,7 @@ public class BabystepsTimer {
 		return twoDigitsFormat.format(remainingMinutes)+":"+twoDigitsFormat.format(remainingSeconds-remainingMinutes*60);
 	}
 
-	private  String createTimerHtml(final String timerText, final String bodyColor, final boolean running) {
+	private String createTimerHtml(final String timerText, final String bodyColor, final boolean running) {
 		String timerHtml = "<html><body style=\"border: 3px solid #555555; background: "+bodyColor+"; margin: 0; padding: 0;\">" +
 				"<h1 style=\"text-align: center; font-size: 30px; color: #333333;\">"+timerText+"</h1>" +
 				"<div style=\"text-align: center\">";
@@ -130,7 +130,7 @@ public class BabystepsTimer {
 		return timerHtml;
 	}
 
-	public  synchronized void playSound(final String url) {
+	public synchronized void playSound(final String url) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -147,7 +147,7 @@ public class BabystepsTimer {
 		}).start();
 	}
 
-	private  final class TimerThread extends Thread {
+	private final class TimerThread extends Thread {
 		@Override
 		public void run() {
 			timerRunning = true;
