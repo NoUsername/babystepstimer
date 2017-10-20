@@ -40,12 +40,14 @@ public class BabystepsTimer {
 	private  String bodyBackgroundColor = BACKGROUND_COLOR_NEUTRAL;
 
 	private  DecimalFormat twoDigitsFormat = new DecimalFormat("00");
+	private WallClock wallClock;
 
 	public static void main(String[] args) throws InterruptedException {
-		new BabystepsTimer().init();
+		new BabystepsTimer().init(new WallClock());
 	}
 
-	public void init() throws InterruptedException {
+	public void init(WallClock wallClock) throws InterruptedException {
+		this.wallClock = wallClock;
 		timerFrame = new JFrame("Babysteps Timer");
 		timerFrame.setUndecorated(true);
 
@@ -91,7 +93,7 @@ public class BabystepsTimer {
 						timerPane.setText(createTimerHtml(getRemainingTimeCaption(0L), BACKGROUND_COLOR_NEUTRAL, false));
 						timerFrame.repaint();
 					} else  if("command://reset".equals(e.getDescription())) {
-						currentCycleStartTime = System.currentTimeMillis();
+						currentCycleStartTime = wallClock.getCurrentCycleStartTime();
 						bodyBackgroundColor=BACKGROUND_COLOR_PASSED;
 					} else  if("command://quit".equals(e.getDescription())) {
 						System.exit(0);
@@ -149,14 +151,14 @@ public class BabystepsTimer {
 		@Override
 		public void run() {
 			timerRunning = true;
-			currentCycleStartTime = System.currentTimeMillis();
+			currentCycleStartTime = wallClock.getCurrentCycleStartTime();
 
 			while(timerRunning) {
-				long elapsedTime = System.currentTimeMillis() - currentCycleStartTime;
+				long elapsedTime =wallClock.getCurrentCycleStartTime() - currentCycleStartTime;
 
 				if(elapsedTime >= SECONDS_IN_CYCLE*1000+980) {
-					currentCycleStartTime = System.currentTimeMillis();
-					elapsedTime = System.currentTimeMillis() - currentCycleStartTime;
+					currentCycleStartTime =wallClock.getCurrentCycleStartTime();
+					elapsedTime =wallClock.getCurrentCycleStartTime() - currentCycleStartTime;
 				}
 				if(elapsedTime >= 5000 && elapsedTime < 6000 && !BACKGROUND_COLOR_NEUTRAL.equals(bodyBackgroundColor)) {
 					bodyBackgroundColor = BACKGROUND_COLOR_NEUTRAL;

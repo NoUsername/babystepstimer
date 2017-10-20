@@ -10,9 +10,11 @@ import static org.junit.Assert.assertTrue;
 public class BabystepsTimerTestDriver {
 
     private BabystepsTimer babystepsTimer;
+    private TestWallClock wallClock;
 
-    public BabystepsTimerTestDriver(BabystepsTimer babystepsTimer) {
+    public BabystepsTimerTestDriver(BabystepsTimer babystepsTimer, TestWallClock wallClock) {
         this.babystepsTimer = babystepsTimer;
+        this.wallClock = wallClock;
     }
 
     public boolean userInterfaceContains(String text) {
@@ -26,10 +28,11 @@ public class BabystepsTimerTestDriver {
     }
 
     public void init() throws Exception {
-        babystepsTimer.init();
+        babystepsTimer.init(wallClock);
     }
 
-    static void waitFor(long timeInMilliseconds) throws InterruptedException {
-        Thread.sleep(timeInMilliseconds);
+    void waitFor(long timeInMilliseconds) throws InterruptedException {
+        wallClock.advance(timeInMilliseconds);
+        Thread.sleep(50L);
     }
 }

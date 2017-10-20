@@ -13,22 +13,23 @@ public class BabystepsTimerTest {
     private BabystepsTimer babystepsTimer;
     private BabystepsTimerTestDriver babystepsTimerTestDriver;
 
+    private TestWallClock wallClock = new TestWallClock();
+
     @Before
     public void setUp() throws Exception {
         babystepsTimer = new BabystepsTimer();
-        babystepsTimerTestDriver = new BabystepsTimerTestDriver(babystepsTimer);
+        babystepsTimerTestDriver = new BabystepsTimerTestDriver(babystepsTimer, wallClock);
         babystepsTimerTestDriver.init();
     }
 
     @Test
     public void showsTwoMinutesAfterStartingUp() throws Exception {
-        babystepsTimerTestDriver.waitFor(50L);
+        Thread.sleep(50L);
         assertTrue(babystepsTimerTestDriver.userInterfaceContains("02:00"));
     }
 
     @Test
     public void countDownAfterPressingStart() throws Exception {
-        babystepsTimerTestDriver.init();
         babystepsTimerTestDriver.waitFor(50L);
 
         babystepsTimerTestDriver.press("start");
@@ -38,7 +39,7 @@ public class BabystepsTimerTest {
 
     @Test
     public void stopCountdownAfterPressingStop() throws Exception {
-        babystepsTimerTestDriver.init();
+
         babystepsTimerTestDriver.waitFor(50L);
 
         babystepsTimerTestDriver.press("start");
@@ -51,7 +52,6 @@ public class BabystepsTimerTest {
 
     @Test
     public void resetResetsTimerToInitialTime() throws Exception {
-        babystepsTimerTestDriver.init();
         final long time = 50L;
         babystepsTimerTestDriver.waitFor(time);
 
