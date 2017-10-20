@@ -33,12 +33,12 @@ public class BabystepsTimer {
 	private static final long SECONDS_IN_CYCLE = 120;
 
 	private static JFrame timerFrame;
-	private static JTextPane timerPane;
+	static JTextPane timerPane;
 	private static boolean timerRunning;
 	private static long currentCycleStartTime;
 	private static String lastRemainingTime;
 	private static String bodyBackgroundColor = BACKGROUND_COLOR_NEUTRAL;
-	
+
 	private static DecimalFormat twoDigitsFormat = new DecimalFormat("00");
 
 	public static void main(final String[] args) throws InterruptedException {
@@ -60,14 +60,14 @@ public class BabystepsTimer {
 				lastX = e.getXOnScreen();
 				lastY = e.getYOnScreen();
 			}
-			
+
 			@Override
 			public void mouseDragged(final MouseEvent e) {
 				int x = e.getXOnScreen();
 				int y = e.getYOnScreen();
-				
+
 				timerFrame.setLocation(timerFrame.getLocation().x + (x-lastX), timerFrame.getLocation().y + (y-lastY));
-				
+
 				lastX = x;
 				lastY = y;
 			}
@@ -103,7 +103,7 @@ public class BabystepsTimer {
 	private static String getRemainingTimeCaption(final long elapsedTime) {
 		long elapsedSeconds = elapsedTime/1000;
 		long remainingSeconds = SECONDS_IN_CYCLE - elapsedSeconds;
-		
+
 		long remainingMinutes = remainingSeconds/60;
 		return twoDigitsFormat.format(remainingMinutes)+":"+twoDigitsFormat.format(remainingSeconds-remainingMinutes*60);
 	}
@@ -146,10 +146,10 @@ public class BabystepsTimer {
 		public void run() {
 			timerRunning = true;
 			currentCycleStartTime = System.currentTimeMillis();
-			
+
 			while(timerRunning) {
 				long elapsedTime = System.currentTimeMillis() - currentCycleStartTime;
-				
+
 				if(elapsedTime >= SECONDS_IN_CYCLE*1000+980) {
 					currentCycleStartTime = System.currentTimeMillis();
 					elapsedTime = System.currentTimeMillis() - currentCycleStartTime;
@@ -157,7 +157,7 @@ public class BabystepsTimer {
 				if(elapsedTime >= 5000 && elapsedTime < 6000 && !BACKGROUND_COLOR_NEUTRAL.equals(bodyBackgroundColor)) {
 					bodyBackgroundColor = BACKGROUND_COLOR_NEUTRAL;
 				}
-				
+
 				String remainingTime = getRemainingTimeCaption(elapsedTime);
 				if(!remainingTime.equals(lastRemainingTime)) {
 					if(remainingTime.equals("00:10")) {
@@ -166,7 +166,7 @@ public class BabystepsTimer {
 						playSound("32304__acclivity__shipsbell.wav");
 						bodyBackgroundColor=BACKGROUND_COLOR_FAILED;
 					}
-					
+
 					timerPane.setText(createTimerHtml(remainingTime, bodyBackgroundColor, true));
 					timerFrame.repaint();
 					lastRemainingTime = remainingTime;
