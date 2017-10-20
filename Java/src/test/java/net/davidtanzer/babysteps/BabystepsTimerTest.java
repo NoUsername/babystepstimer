@@ -24,7 +24,7 @@ public class BabystepsTimerTest {
 
     @Test
     public void showsTwoMinutesAfterStartingUp() throws Exception {
-        Thread.sleep(50L);
+        babystepsTimerTestDriver.waitFor(50L);
         assertTrue(babystepsTimerTestDriver.userInterfaceContains("02:00"));
     }
 
