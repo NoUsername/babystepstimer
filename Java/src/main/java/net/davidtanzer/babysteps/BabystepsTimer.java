@@ -26,22 +26,34 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 public class BabystepsTimer {
-	private static final String BACKGROUND_COLOR_NEUTRAL = "#ffffff";
-	private static final String BACKGROUND_COLOR_FAILED = "#ffcccc";
-	private static final String BACKGROUND_COLOR_PASSED = "#ccffcc";
+	static final String BACKGROUND_COLOR_NEUTRAL = "#ffffff";
+	static final String BACKGROUND_COLOR_FAILED = "#ffcccc";
+	static final String BACKGROUND_COLOR_PASSED = "#ccffcc";
 
-	private static final long SECONDS_IN_CYCLE = 120;
+	static long SECONDS_IN_CYCLE = 15;
 
-	private static JFrame timerFrame;
-	private static JTextPane timerPane;
-	private static boolean timerRunning;
-	private static long currentCycleStartTime;
-	private static String lastRemainingTime;
-	private static String bodyBackgroundColor = BACKGROUND_COLOR_NEUTRAL;
-	
-	private static DecimalFormat twoDigitsFormat = new DecimalFormat("00");
+	static JFrame timerFrame;
+	static JTextPane timerPane;
+	static String bodyBackgroundColor = BACKGROUND_COLOR_NEUTRAL;
+	static TimeTicker timeTicker = new TimeTicker(SECONDS_IN_CYCLE);
 
 	public static void main(final String[] args) throws InterruptedException {
+		timeTicker.onTextChange = (remainingTime) -> {
+
+            if (remainingTime.equals("00:10"))
+            {
+                BabystepsTimer.playSound("2166__suburban-grilla__bowl-struck.wav");
+            }
+            else if (remainingTime.equals("00:00"))
+            {
+                BabystepsTimer.playSound("32304__acclivity__shipsbell.wav");
+                BabystepsTimer.bodyBackgroundColor = BabystepsTimer.BACKGROUND_COLOR_FAILED;
+            }
+
+			BabystepsTimer.timerFrame.repaint();
+            final String html = createTimerHtml(remainingTime, BabystepsTimer.bodyBackgroundColor, true);
+            BabystepsTimer.timerPane.setText(html);
+		};
 		timerFrame = new JFrame("Babysteps Timer");
 		timerFrame.setUndecorated(true);
 
@@ -49,7 +61,7 @@ public class BabystepsTimer {
 		timerFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		timerPane = new JTextPane();
 		timerPane.setContentType("text/html");
-		timerPane.setText(createTimerHtml(getRemainingTimeCaption(0L), BACKGROUND_COLOR_NEUTRAL, false));
+		timerPane.setText(createTimerHtml(TimeFormatter.getRemainingTimeCaption(0L, SECONDS_IN_CYCLE), BACKGROUND_COLOR_NEUTRAL, false));
 		timerPane.setEditable(false);
 		timerPane.addMouseMotionListener(new MouseMotionListener() {
 			private int lastX;
@@ -60,14 +72,14 @@ public class BabystepsTimer {
 				lastX = e.getXOnScreen();
 				lastY = e.getYOnScreen();
 			}
-			
+
 			@Override
 			public void mouseDragged(final MouseEvent e) {
 				int x = e.getXOnScreen();
 				int y = e.getYOnScreen();
-				
+
 				timerFrame.setLocation(timerFrame.getLocation().x + (x-lastX), timerFrame.getLocation().y + (y-lastY));
-				
+
 				lastX = x;
 				lastY = y;
 			}
@@ -78,16 +90,16 @@ public class BabystepsTimer {
 				if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 					if("command://start".equals(e.getDescription())) {
 						timerFrame.setAlwaysOnTop(true);
-						timerPane.setText(createTimerHtml(getRemainingTimeCaption(0L), BACKGROUND_COLOR_NEUTRAL, true));
+						timerPane.setText(createTimerHtml(TimeFormatter.getRemainingTimeCaption(0L, SECONDS_IN_CYCLE), BACKGROUND_COLOR_NEUTRAL, true));
 						timerFrame.repaint();
-						new TimerThread().start();
+						timeTicker.start();
 					} else if("command://stop".equals(e.getDescription())) {
-						timerRunning = false;
+						timeTicker.timerRunning = false;
 						timerFrame.setAlwaysOnTop(false);
-						timerPane.setText(createTimerHtml(getRemainingTimeCaption(0L), BACKGROUND_COLOR_NEUTRAL, false));
+						timerPane.setText(createTimerHtml(TimeFormatter.getRemainingTimeCaption(0L, SECONDS_IN_CYCLE), BACKGROUND_COLOR_NEUTRAL, false));
 						timerFrame.repaint();
 					} else  if("command://reset".equals(e.getDescription())) {
-						currentCycleStartTime = System.currentTimeMillis();
+						timeTicker.initTimer();
 						bodyBackgroundColor=BACKGROUND_COLOR_PASSED;
 					} else  if("command://quit".equals(e.getDescription())) {
 						System.exit(0);
@@ -98,14 +110,6 @@ public class BabystepsTimer {
 		timerFrame.getContentPane().add(timerPane);
 
 		timerFrame.setVisible(true);
-	}
-
-	private static String getRemainingTimeCaption(final long elapsedTime) {
-		long elapsedSeconds = elapsedTime/1000;
-		long remainingSeconds = SECONDS_IN_CYCLE - elapsedSeconds;
-		
-		long remainingMinutes = remainingSeconds/60;
-		return twoDigitsFormat.format(remainingMinutes)+":"+twoDigitsFormat.format(remainingSeconds-remainingMinutes*60);
 	}
 
 	private static String createTimerHtml(final String timerText, final String bodyColor, final boolean running) {
@@ -141,42 +145,4 @@ public class BabystepsTimer {
 		}).start();
 	}
 
-	private static final class TimerThread extends Thread {
-		@Override
-		public void run() {
-			timerRunning = true;
-			currentCycleStartTime = System.currentTimeMillis();
-			
-			while(timerRunning) {
-				long elapsedTime = System.currentTimeMillis() - currentCycleStartTime;
-				
-				if(elapsedTime >= SECONDS_IN_CYCLE*1000+980) {
-					currentCycleStartTime = System.currentTimeMillis();
-					elapsedTime = System.currentTimeMillis() - currentCycleStartTime;
-				}
-				if(elapsedTime >= 5000 && elapsedTime < 6000 && !BACKGROUND_COLOR_NEUTRAL.equals(bodyBackgroundColor)) {
-					bodyBackgroundColor = BACKGROUND_COLOR_NEUTRAL;
-				}
-				
-				String remainingTime = getRemainingTimeCaption(elapsedTime);
-				if(!remainingTime.equals(lastRemainingTime)) {
-					if(remainingTime.equals("00:10")) {
-						playSound("2166__suburban-grilla__bowl-struck.wav");
-					} else if(remainingTime.equals("00:00")) {
-						playSound("32304__acclivity__shipsbell.wav");
-						bodyBackgroundColor=BACKGROUND_COLOR_FAILED;
-					}
-					
-					timerPane.setText(createTimerHtml(remainingTime, bodyBackgroundColor, true));
-					timerFrame.repaint();
-					lastRemainingTime = remainingTime;
-				}
-				try {
-					sleep(10);
-				} catch (InterruptedException e) {
-					//We don't really care about this one...
-				}
-			}
-		}
-	}
 }
